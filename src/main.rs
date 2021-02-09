@@ -4,14 +4,13 @@ use tera::{Context, Tera};
 
 #[get("/")]
 async fn home(view: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let game = &Context::from_serialize(&GameOrchestrator {
+    let game = GameOrchestrator {
         home_team_name: "Miami Hurricanes".into(),
         away_team_name: "Nebraska Cornhuskers".into(),
-    })
-    .unwrap();
+    };
 
     let body = view
-        .render("home.html", game)
+        .render("home.html", &Context::from_serialize(&game).unwrap())
         .map_err(|_| error::ErrorInternalServerError("Template error"))?;
 
     Ok(HttpResponse::Ok().content_type("text/html").body(body))
