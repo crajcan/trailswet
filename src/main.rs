@@ -2,7 +2,7 @@ use actix_web::{error, get, post, web, App, Error, HttpResponse, HttpServer, Res
 use serde::Serialize;
 use tera::{Context, Tera};
 
-#[get("/")]
+#[get("/home{tail:.*}")]
 async fn home(view: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
     let game = GameOrchestrator {
         home_team_name: "Miami Hurricanes".into(),
@@ -32,6 +32,8 @@ struct GameOrchestrator {
     away_team_name: String,
 }
 
+
+//try foo/{bar}/{tail:.*} to match /home.json
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
