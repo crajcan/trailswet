@@ -1,15 +1,50 @@
 use actix_service::Service;
-use actix_web::{App, get, HttpServer};
-use futures::future::FutureExt;
+use actix_web::{App, get, Error, HttpServer, HttpResponse, HttpRequest, Responder};
+use futures::future::{FutureExt, ready, Ready};
+use serde::Serialize;
 
 #[get("/index.html")]
-async fn index() -> &'static str {
-    println!("in handler");
+async fn index() -> impl Responder {
+    Todo {
+      id: 42,
+      description: "Walk the doggo".into(),
+      done: true
+    }
+}
 
-    "Welcome!"
+#[derive(Serialize)]
+struct GameOrchestrator {
+    home_team_name: String,
+    away_team_name: String,
 }
 
 
+// this struct will be used to represent database record
+#[derive(Serialize)]
+pub struct Todo {
+    pub id: i32,
+    pub description: String,
+    pub done: bool,
+}
+
+// implementation of Actix Responder for Todo struct so we can return Todo from action handler
+impl Responder for Todo {
+    type Error = Error;
+    type Future = Ready<Result<HttpResponse, Error>>;
+
+    fn respond_to(self, _req: &HttpRequest) -> Self::Future {
+        let body = serde_json::to_string(&self).unwrap();
+        // create response and set content type
+        ready(Ok(
+            HttpResponse::Ok()
+                .content_type("application/json")
+                .body(body)
+        ))
+    }
+}
+
+
+// `std::result::Result<ServiceResponse, actix_web::Error>
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
