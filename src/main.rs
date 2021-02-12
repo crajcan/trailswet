@@ -1,5 +1,5 @@
 use actix_service::Service;
-use actix_web::{App, Error, get, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{App, error, Error, get, HttpRequest, HttpResponse, HttpServer, Responder};
 use futures::future::{FutureExt, ready, Ready};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -35,15 +35,21 @@ impl Responder for Todo {
 
     fn respond_to(self, req: &HttpRequest) -> Self::Future {
         let path: PathBuf = req.match_info().query("tail").parse().unwrap();
-        println!("path: {:?}", path);
 
-        let body = serde_json::to_string(&self).unwrap();
-        // create response and set content type
-        ready(Ok(
-            HttpResponse::Ok()
-                .content_type("application/json")
-                .body(body)
-        ))
+        ready(match path.to_str().unwrap() {
+            "" | "/" => {
+                /*
+                let body = view
+                    .render("home.html", &Context::from_serialize(&self).unwrap())
+                    .map_err(|_| error::ErrorInternalServerError("Template error"))?;
+
+                Ok(HttpResponse::Ok().content_type("text/html").body(body))
+                */
+                Ok(HttpResponse::Ok().content_type("application/json").json(self))
+            }
+            ".json" => Ok(HttpResponse::Ok().content_type("application/json").json(self)),
+            _ => Err(error::ErrorNotFound("Resource Not Found"))
+        })
     }
 }
 
