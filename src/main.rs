@@ -1,17 +1,7 @@
-use actix_service::Service;
-use actix_web::{App, error, Error, get, HttpRequest, HttpResponse, HttpServer, Responder};
-use futures::future::{FutureExt, ready, Ready};
+use actix_web::{error, get, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
+use futures::future::{ready, Ready};
 use serde::Serialize;
 use std::path::PathBuf;
-
-#[get("index{tail:.*}")]
-async fn index() -> impl Responder {
-    Todo {
-      id: 42,
-      description: "Walk the doggo".into(),
-      done: true
-    }
-}
 
 #[derive(Serialize)]
 struct GameOrchestrator {
@@ -19,17 +9,7 @@ struct GameOrchestrator {
     away_team_name: String,
 }
 
-
-// this struct will be used to represent database record
-#[derive(Serialize)]
-pub struct Todo {
-    pub id: i32,
-    pub description: String,
-    pub done: bool,
-}
-
-// implementation of Actix Responder for Todo struct so we can return Todo from action handler
-impl Responder for Todo {
+impl Responder for GameOrchestrator {
     type Error = Error;
     type Future = Ready<Result<HttpResponse, Error>>;
 
@@ -45,30 +25,30 @@ impl Responder for Todo {
 
                 Ok(HttpResponse::Ok().content_type("text/html").body(body))
                 */
-                Ok(HttpResponse::Ok().content_type("application/json").json(self))
+                Ok(HttpResponse::Ok()
+                    .content_type("application/json")
+                    .json(self))
             }
-            ".json" => Ok(HttpResponse::Ok().content_type("application/json").json(self)),
-            _ => Err(error::ErrorNotFound("Resource Not Found"))
+            ".json" => Ok(HttpResponse::Ok()
+                .content_type("application/json")
+                .json(self)),
+            _ => Err(error::ErrorNotFound("Resource Not Found")),
         })
     }
 }
 
+#[get("home{tail:.*}")]
+async fn home() -> impl Responder {
+    GameOrchestrator {
+        home_team_name: "Miami Hurricanes".into(),
+        away_team_name: "Nebraska Cornhuskers".into(),
+    }
+}
 
-// `std::result::Result<ServiceResponse, actix_web::Error>
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .wrap_fn(|req, srv| {
-                println!("before handler, path: {}", req.path());
-                srv.call(req).map(|res| {
-                    println!("processing response");
-                    res
-                })
-            })
-            .service(index)
-    })
-    .bind("127.0.0.1:3000")?
-    .run()
-    .await
+    HttpServer::new(|| App::new().service(home))
+        .bind("127.0.0.1:3000")?
+        .run()
+        .await
 }
