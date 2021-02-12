@@ -1,9 +1,10 @@
 use actix_service::Service;
-use actix_web::{App, get, Error, HttpServer, HttpResponse, HttpRequest, Responder};
+use actix_web::{App, Error, get, HttpRequest, HttpResponse, HttpServer, Responder};
 use futures::future::{FutureExt, ready, Ready};
 use serde::Serialize;
+use std::path::PathBuf;
 
-#[get("/index.html")]
+#[get("index{tail:.*}")]
 async fn index() -> impl Responder {
     Todo {
       id: 42,
@@ -32,7 +33,10 @@ impl Responder for Todo {
     type Error = Error;
     type Future = Ready<Result<HttpResponse, Error>>;
 
-    fn respond_to(self, _req: &HttpRequest) -> Self::Future {
+    fn respond_to(self, req: &HttpRequest) -> Self::Future {
+        let path: PathBuf = req.match_info().query("tail").parse().unwrap();
+        println!("path: {:?}", path);
+
         let body = serde_json::to_string(&self).unwrap();
         // create response and set content type
         ready(Ok(
