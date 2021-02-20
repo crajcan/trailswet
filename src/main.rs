@@ -1,24 +1,36 @@
-use actix_web::{error, get, web, App, Error, HttpResponse, HttpServer};
+use actix_http::{Error, Response};
+use actix_web::*;
+use futures_util::future::{err, ok, Ready};
 use serde::Serialize;
 use tera::{Context, Tera};
 
-#[get("/{tail:.*}")]
-async fn home(path: web::Path<String>, view: web::Data<tera::Tera>) -> Result<HttpResponse, Error> {
-    let game = GameOrchestrator {
-        home_team_name: "Miami Hurricanes".into(),
-        away_team_name: "Nebraska Cornhuskers".into(),
-    };
+struct Presenter<R: Serialize, T: Into<String>> {
+    resource: R,
+    template: T,
+}
 
-    match path.as_str() {
-        "" => {
-            let body = view
-                .render("home.html", &Context::from_serialize(&game).unwrap())
-                .map_err(|_| error::ErrorInternalServerError("Template error"))?;
+impl<P: Serialize, T: Into<String>> Responder for Presenter<P, T> {
+    type Error = Error;
+    type Future = Ready<Result<Response, Error>>;
 
-            Ok(HttpResponse::Ok().content_type("text/html").body(body))
+    fn respond_to(self, req: &HttpRequest) -> Self::Future {
+        let mime = req.match_info().query("tail");
+        let template = req.app_data::<web::Data<tera::Tera>>().unwrap();
+        let resource = serde_json::to_value(&self.resource).unwrap();
+
+        match mime {
+            "" | "/" => {
+                let body = template
+                    .render(
+                        &self.template.into(),
+                        &Context::from_serialize(&resource).unwrap(),
+                    )
+                    .unwrap();
+                ok(HttpResponse::Ok().content_type("text/html").body(body))
+            }
+            ".json" => ok(HttpResponse::Ok().json(&resource)),
+            _ => err(error::ErrorNotFound("Resource Not Found")),
         }
-        ".json" => Ok(HttpResponse::Ok().json(game)),
-        _ => Err(error::ErrorNotFound("Resource Not Found")),
     }
 }
 
@@ -28,15 +40,57 @@ struct GameOrchestrator {
     away_team_name: String,
 }
 
-//try foo/{bar}/{tail:.*} to match /home.json
+#[get("/index{tail:.*}")]
+async fn index() -> impl Responder {
+    let orchestrator = GameOrchestrator {
+        home_team_name: "Miami Hurricanes".into(),
+        away_team_name: "Nebraska Cornhuskers".into(),
+    };
+
+    Presenter {
+        resource: orchestrator,
+        template: "index.html",
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
-
-        App::new().data(tera).service(home)
+        App::new().data(tera).service(index)
     })
     .bind("127.0.0.1:3000")?
     .run()
     .await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{body::Body, test, App};
+    use serde_json::json;
+
+    #[actix_rt::test]
+    async fn test_json_get() {
+        let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
+        let mut app = test::init_service(App::new().data(tera).service(index)).await;
+        let req = test::TestRequest::with_uri("/index.json").to_request();
+        let mut resp = test::call_service(&mut app, req).await;
+        let body = resp.take_body();
+        let body = body.as_ref().unwrap();
+        assert!(resp.status().is_success());
+        assert_eq!(
+            &Body::from(json!({"follower_name":"Jill", "followee_name": "Jim" })), // or serde.....
+            body
+        );
+    }
+    #[actix_rt::test]
+    #[should_panic] /// Template doesnt exist
+    async fn test_web_get() {
+        let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
+        let mut app = test::init_service(App::new().data(tera).service(index)).await;
+        let req = test::TestRequest::with_uri("/index").to_request();
+        let _resp = test::call_service(&mut app, req).await;
+
+    }
 }
