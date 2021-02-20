@@ -1345,9 +1345,11 @@ dependencies = [
 name = "netflix"
 version = "0.1.0"
 dependencies = [
+ "actix-http",
  "actix-web",
- "futures",
+ "futures-util",
  "serde",
+ "serde_json",
  "sqlx",
  "tera",
 ]
