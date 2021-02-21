@@ -1,16 +1,33 @@
 use actix_web::*;
 use tera::Tera;
+use dotenv::dotenv;
+use std::env;
+use sqlx::postgres::PgPoolOptions;
 
 mod utils;
 use utils::presenter::Presenter;
 
 mod controllers;
+use controllers::*;
+
 mod orchestrators;
 use orchestrators::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use controllers::*;
+    dotenv().ok();
+
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+
+    println!("database_url: {}", database_url);
+
+    let db_pool = PgPoolOptions::new()
+      .max_connections(5)
+      .connect(&database_url)
+      .await;
+
+    println!("starting_web_server");
 
     HttpServer::new(|| {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
@@ -24,7 +41,7 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{body::Body, test, App};
+    use actix_web::{body::Body, test, App}; 
     use serde_json::json;
 
     #[actix_rt::test]
