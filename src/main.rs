@@ -4,36 +4,6 @@ use futures_util::future::{err, ok, Ready};
 use serde::Serialize;
 use tera::{Context, Tera};
 
-struct Presenter<R: Serialize, T: Into<String>> {
-    resource: R,
-    template: T,
-}
-
-impl<P: Serialize, T: Into<String>> Responder for Presenter<P, T> {
-    type Error = Error;
-    type Future = Ready<Result<Response, Error>>;
-
-    fn respond_to(self, req: &HttpRequest) -> Self::Future {
-        let mime = req.match_info().query("tail");
-        let template = req.app_data::<web::Data<tera::Tera>>().unwrap();
-        let resource = serde_json::to_value(&self.resource).unwrap();
-
-        match mime {
-            "" | "/" => {
-                let body = template
-                    .render(
-                        &self.template.into(),
-                        &Context::from_serialize(&resource).unwrap(),
-                    )
-                    .unwrap();
-                ok(HttpResponse::Ok().content_type("text/html").body(body))
-            }
-            ".json" => ok(HttpResponse::Ok().json(&resource)),
-            _ => err(error::ErrorNotFound("Resource Not Found")),
-        }
-    }
-}
-
 #[derive(Serialize)]
 struct GameOrchestrator {
     home_team_name: String,
@@ -50,6 +20,35 @@ async fn index() -> impl Responder {
     Presenter {
         resource: orchestrator,
         template: "index.html",
+    }
+}
+
+struct Presenter<R: Serialize, T: Into<String>> {
+    resource: R,
+    template: T,
+}
+
+impl<R: Serialize, T: Into<String>> Responder for Presenter<R, T> {
+    type Error = Error;
+    type Future = Ready<Result<Response, Error>>;
+
+    fn respond_to(self, req: &HttpRequest) -> Self::Future {
+        let mime = req.match_info().query("tail");
+        let view = req.app_data::<web::Data<tera::Tera>>().unwrap();
+
+        match mime {
+            "" | "/" => {
+                let body = view
+                    .render(
+                        &self.template.into(),
+                        &Context::from_serialize(&self.resource).unwrap(),
+                    )
+                    .unwrap();
+                ok(HttpResponse::Ok().content_type("text/html").body(body))
+            }
+            ".json" => ok(HttpResponse::Ok().json(&self.resource)),
+            _ => err(error::ErrorNotFound("Resource Not Found")),
+        }
     }
 }
 
@@ -85,12 +84,12 @@ mod tests {
         );
     }
     #[actix_rt::test]
-    #[should_panic] /// Template doesnt exist
+    #[should_panic]
+    /// Template doesnt exist
     async fn test_web_get() {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
         let mut app = test::init_service(App::new().data(tera).service(index)).await;
         let req = test::TestRequest::with_uri("/index").to_request();
         let _resp = test::call_service(&mut app, req).await;
-
     }
 }
