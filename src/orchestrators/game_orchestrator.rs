@@ -17,16 +17,8 @@ impl GameOrchestrator {
                 home_team_id: 1,
                 away_team_id: 2,
             },
-            home_team: Team {
-                id: 1,
-                name: "Miami Hurricanes".into(),
-                url: "http://localhost:3000/teams/1".into(),
-            },
-            away_team: Team {
-                id: 2,
-                name: "Nebraska Cornhuskers".into(),
-                url: "http://localhost:3000/teams/2".into(),
-            },
+            home_team: Team::find(1),
+            away_team: Team::find(2)
         }
     }
 }
