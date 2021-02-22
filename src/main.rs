@@ -1,8 +1,8 @@
 use actix_web::*;
-use tera::Tera;
 use dotenv::dotenv;
-use std::env;
 use sqlx::postgres::PgPoolOptions;
+use std::env;
+use tera::Tera;
 
 mod utils;
 use utils::presenter::Presenter;
@@ -13,6 +13,9 @@ use controllers::*;
 mod orchestrators;
 use orchestrators::*;
 
+mod models;
+use models::*;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -22,9 +25,9 @@ async fn main() -> std::io::Result<()> {
     println!("database_url: {}", database_url);
 
     let db_pool = PgPoolOptions::new()
-      .max_connections(5)
-      .connect(&database_url)
-      .await;
+        .max_connections(5)
+        .connect(&database_url)
+        .await;
 
     println!("starting_web_server");
 
@@ -40,7 +43,7 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{body::Body, test, App}; 
+    use actix_web::{body::Body, test, App};
     use serde_json::json;
 
     #[actix_rt::test]

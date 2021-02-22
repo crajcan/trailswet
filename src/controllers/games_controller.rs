@@ -1,6 +1,6 @@
+use crate::game_orchestrator::GameOrchestrator;
 use crate::Presenter;
 use actix_web::*;
-use crate::game_orchestrator::GameOrchestrator;
 
 #[get("/show{tail:.*}")]
 async fn show() -> impl Responder {
