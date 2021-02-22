@@ -1,3 +1,7 @@
-# Docs
+# Run the schema file
 
-/Users/crajcan/source/rust/netflix/target/doc/netflix/index.html
+psql -U netflix -d netflix -a -f db/schema.sql
+
+# Run a migrations
+
+psql -U netflix -d netflix -a -f db/migrations/<my_file>.sql

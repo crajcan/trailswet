@@ -17,7 +17,6 @@ use orchestrators::*;
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
 
     println!("database_url: {}", database_url);
