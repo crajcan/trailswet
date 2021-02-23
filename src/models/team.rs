@@ -1,18 +1,29 @@
 use serde::Serialize;
+use sqlx::{Error, PgPool};
 
 #[derive(Serialize)]
 pub struct Team {
-    pub id: u32,
+    pub id: i32,
     pub name: String,
     //pub url: String,
 }
 
 impl Team {
-    pub fn find(id: i32) -> Self {
-        Team {
-            id: 1,
-            name: "Miami Hurricanes".into(),
-//          url: "http://localhost:3000/teams/1".into(),
-        }
+    pub async fn find(id: i32, pool: &PgPool) -> Result<Self, Error> {
+        let row = sqlx::query!(
+            r#"
+        SELECT *
+        FROM teams
+        WHERE id = $1 
+                "#,
+            id
+        )
+        .fetch_one(&*pool)
+        .await?;
+
+        Ok(Team {
+            id: row.id,
+            name: row.name,
+        })
     }
 }

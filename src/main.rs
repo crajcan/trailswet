@@ -27,13 +27,18 @@ async fn main() -> std::io::Result<()> {
     let db_pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
-        .await;
+        .await
+        .unwrap();
 
     println!("starting_web_server");
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
-        App::new().data(tera).service(games_controller::show)
+
+        App::new()
+            .data(tera)
+            .data(db_pool.clone())
+            .service(games_controller::show)
     })
     .bind("127.0.0.1:3000")?
     .run()
