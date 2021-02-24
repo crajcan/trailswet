@@ -10,7 +10,8 @@ pub struct Game {
 
 impl Game {
     pub async fn find(id: i32, pool: &PgPool) -> Result<Self, Error> {
-        let row = sqlx::query!(
+        sqlx::query_as!(
+            Game,
             r#"
         SELECT *
         FROM games
@@ -19,12 +20,6 @@ impl Game {
             id
         )
         .fetch_one(&*pool)
-        .await?;
-
-        Ok(Game {
-            id: row.id,
-            home_team_id: row.home_team_id,
-            away_team_id: row.away_team_id
-        })
+        .await
     }
 }
