@@ -1,9 +1,30 @@
 use serde::Serialize;
-use sqlx::PgPool;
+use sqlx::{Error, PgPool};
 
 #[derive(Serialize)]
 pub struct Game {
-    pub id: u32,
-    pub home_team_id: u32,
-    pub away_team_id: u32,
+    pub id: i32,
+    pub home_team_id: i32,
+    pub away_team_id: i32,
+}
+
+impl Game {
+    pub async fn find(id: i32, pool: &PgPool) -> Result<Self, Error> {
+        let row = sqlx::query!(
+            r#"
+        SELECT *
+        FROM games
+        WHERE id = $1
+                "#,
+            id
+        )
+        .fetch_one(&*pool)
+        .await?;
+
+        Ok(Game {
+            id: row.id,
+            home_team_id: row.home_team_id,
+            away_team_id: row.away_team_id
+        })
+    }
 }

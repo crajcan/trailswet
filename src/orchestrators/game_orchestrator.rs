@@ -11,16 +11,13 @@ pub struct GameOrchestrator {
 }
 
 impl GameOrchestrator {
-    pub async fn find(game_id: u32, pool: &PgPool) -> GameOrchestrator {
-        let home_team = Team::find(1, pool).await.unwrap();
-        let away_team = Team::find(2, pool).await.unwrap();
+    pub async fn find(game_id: i32, pool: &PgPool) -> GameOrchestrator {
+        let game = Game::find(game_id, pool).await.unwrap();
+        let home_team = Team::find(game.home_team_id, pool).await.unwrap();
+        let away_team = Team::find(game.away_team_id, pool).await.unwrap();
 
         GameOrchestrator {
-            game: Game {
-                id: game_id,
-                home_team_id: 1,
-                away_team_id: 2,
-            },
+            game,
             home_team,
             away_team,
         }
