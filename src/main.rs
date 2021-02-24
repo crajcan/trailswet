@@ -1,20 +1,44 @@
 use actix_web::*;
+use dotenv::dotenv;
+use sqlx::postgres::PgPoolOptions;
+use std::env;
 use tera::Tera;
 
 mod utils;
 use utils::presenter::Presenter;
 
 mod controllers;
+use controllers::*;
+
 mod orchestrators;
 use orchestrators::*;
 
+mod models;
+use models::*;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use controllers::*;
+    dotenv().ok();
 
-    HttpServer::new(|| {
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+
+    println!("database_url: {}", database_url);
+
+    let db_pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .unwrap();
+
+    println!("starting_web_server");
+
+    HttpServer::new(move || {
         let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
-        App::new().data(tera).service(games_controller::show)
+
+        App::new()
+            .data(tera)
+            .data(db_pool.clone())
+            .service(games_controller::show)
     })
     .bind("127.0.0.1:3000")?
     .run()
