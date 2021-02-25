@@ -1,9 +1,11 @@
 use crate::game::Game;
 use crate::team::Team;
+use askama::Template;
 use serde::Serialize;
 use sqlx::{Error, PgPool};
 
-#[derive(Serialize)]
+#[derive(Serialize, Template)]
+#[template(path = "games/show.html")]
 pub struct GameOrchestrator {
     game: Game,
     home_team: Team,

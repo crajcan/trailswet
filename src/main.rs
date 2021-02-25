@@ -2,7 +2,6 @@ use actix_web::*;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
-use tera::Tera;
 
 mod utils;
 use utils::presenter::Presenter;
@@ -33,10 +32,7 @@ async fn main() -> std::io::Result<()> {
     println!("starting_web_server");
 
     HttpServer::new(move || {
-        let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/src/views/**/*")).unwrap();
-
         App::new()
-            .data(tera)
             .data(db_pool.clone())
             .service(games_controller::show)
     })
@@ -45,6 +41,7 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -75,3 +72,4 @@ mod tests {
         let _resp = test::call_service(&mut app, req).await;
     }
 }
+*/
