@@ -3,12 +3,12 @@ use actix_web::*;
 use askama::Template;
 use futures_util::future::{err, ok, Ready};
 use serde::Serialize;
-use tera::Context;
 
-pub struct Presenter<R: Serialize> {
+pub struct Presenter<R: Template + Serialize> {
     pub resource: R,
 }
 
+//plan: Presenter should be Result and this is where we will decide what to do with errors
 impl<R: Template + Serialize> Responder for Presenter<R> {
     type Error = Error;
     type Future = Ready<Result<Response, Error>>;
