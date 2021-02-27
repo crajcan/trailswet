@@ -10,10 +10,15 @@ struct PathParams {
 }
 
 #[get(r#"/show/{id:\d+}{tail:.*}"#)]
-async fn show(path_params: web::Path<PathParams>, db_pool: web::Data<PgPool>) -> impl Responder {
+async fn show(path_params: web::Path<PathParams>, db_pool: web::Data<PgPool>) -> Result<impl Responder> {
     let orchestrator = GameOrchestrator::find(path_params.id, db_pool.get_ref()).await;
 
-    Presenter {
-        resource: orchestrator,
+    match orchestrator {
+        Ok(data) => {
+                      Ok(Presenter {
+                          resource: data,
+                      })
+        },
+        Err(_) => Err(error::ErrorNotFound(path_params.id))
     }
 }
