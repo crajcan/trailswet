@@ -1301,6 +1301,7 @@ dependencies = [
  "actix-http",
  "actix-web",
  "askama",
+ "derive_more",
  "dotenv",
  "futures-util",
  "serde",
