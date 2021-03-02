@@ -4,6 +4,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::env;
 
 mod utils;
+use utils::netflix_error::NetflixError;
 use utils::presenter::Presenter;
 
 mod controllers;

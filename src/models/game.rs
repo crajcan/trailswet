@@ -1,5 +1,5 @@
 use serde::Serialize;
-use sqlx::{PgPool};
+use sqlx::PgPool;
 
 #[derive(Serialize)]
 pub struct Game {
