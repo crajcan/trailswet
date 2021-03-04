@@ -1,5 +1,5 @@
 use serde::Serialize;
-use sqlx::{Error, PgPool};
+use sqlx::PgPool;
 
 #[derive(Serialize)]
 pub struct Game {
@@ -9,7 +9,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub async fn find(id: i32, pool: &PgPool) -> Result<Self, Error> {
+    pub async fn find(id: i32, pool: &PgPool) -> Result<Self, sqlx::Error> {
         sqlx::query_as!(
             Game,
             r#"

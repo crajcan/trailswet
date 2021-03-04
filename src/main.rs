@@ -4,6 +4,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::env;
 
 mod utils;
+use utils::netflix_error::NetflixError;
 use utils::presenter::Presenter;
 
 mod controllers;
@@ -21,15 +22,11 @@ async fn main() -> std::io::Result<()> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
 
-    println!("database_url: {}", database_url);
-
     let db_pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
         .await
         .unwrap();
-
-    println!("starting_web_server");
 
     HttpServer::new(move || {
         App::new()
