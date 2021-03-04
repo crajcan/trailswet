@@ -15,10 +15,7 @@ async fn show(
     path_params: Path<PathParams>,
     db_pool: Data<PgPool>,
 ) -> Result<impl Responder, NetflixError> {
-    let orchestrator = GameOrchestrator::find(path_params.id, db_pool.get_ref()).await;
-
-    match orchestrator {
-        Ok(data) => Ok(Presenter { resource: data }),
-        Err(e) => Err(NetflixError::from(e)),
-    }
+    Ok(Presenter {
+        resource: GameOrchestrator::find(path_params.id, db_pool.get_ref()).await?,
+    })
 }
