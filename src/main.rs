@@ -34,6 +34,10 @@ async fn main() -> std::io::Result<()> {
             .data(db_pool.clone())
             .service(games_controller::show)
             .service(Files::new(
+                "/favicon.ico",
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("static/favicons/favicon.ico"),
+            ))
+            .service(Files::new(
                 "/static",
                 std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("static"),
             ))
