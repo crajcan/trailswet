@@ -1,3 +1,4 @@
+use actix_files::Files;
 use actix_web::*;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -32,6 +33,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(db_pool.clone())
             .service(games_controller::show)
+            .service(Files::new(
+                "/static",
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("static"),
+            ))
     })
     .bind("127.0.0.1:3000")?
     .run()
