@@ -35,11 +35,12 @@ async fn main() -> std::io::Result<()> {
             .service(games_controller::show)
             .service(Files::new(
                 "/favicon.ico",
-                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("static/favicons/favicon.ico"),
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("src/static/favicons/favicon.ico"),
             ))
             .service(Files::new(
                 "/static",
-                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("static"),
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),
             ))
     })
     .bind("127.0.0.1:3000")?
