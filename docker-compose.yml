@@ -2,6 +2,13 @@ version: '3'
 services:
   netflix:
     image: dev-image
+    volumes:
+      - ./:/usr/src/netflix
+      - /usr/src/netflix/target/
+      - /usr/src/netflix/.git/
+    environment:
+      - DATABASE_URL=postgres://netflix:password@host.docker.internal/netflix
+      - SOCKET_ADDRESS=0.0.0.0:80
     ports:
       - '3000:80'
     command: cargo watch -c -x run 
