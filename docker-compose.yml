@@ -1,7 +1,7 @@
 version: '3'
 services:
   netflix:
-    image: dev-image
+    image: netflix-dev
     volumes:
       - ./:/usr/src/netflix
       - /usr/src/netflix/target/
@@ -11,4 +11,4 @@ services:
       - SOCKET_ADDRESS=0.0.0.0:80
     ports:
       - '3000:80'
-    command: cargo watch -c -x run 
+    command: cargo watch -c -x run

@@ -1,1 +1,1 @@
-docker build -t dev-image .
+docker build -t netflix-dev .
