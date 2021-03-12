@@ -2,10 +2,6 @@ version: '3'
 services:
   netflix:
     image: netflix-dev
-    volumes:
-      - ./:/usr/src/netflix
-      - /usr/src/netflix/target/
-      - /usr/src/netflix/.git/
     environment:
       - DATABASE_URL=postgres://netflix:password@host.docker.internal/netflix
       - SOCKET_ADDRESS=0.0.0.0:80
