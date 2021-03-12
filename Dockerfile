@@ -1,4 +1,4 @@
-FROM rust:1.49-buster
+FROM netflix-dev
 
 RUN mkdir -p /usr/src/netflix
 
