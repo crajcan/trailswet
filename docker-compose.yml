@@ -7,4 +7,4 @@ services:
       - SOCKET_ADDRESS=0.0.0.0:80
     ports:
       - '3000:80'
-    command: cargo watch -c -d 0.05 --poll -x run
+    command: cargo watch -c -d 0.05 -x run
