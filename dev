@@ -18,6 +18,7 @@ if [ $# -gt 0 ]; then
         mutagen sync terminate netflix-sync
         mutagen sync create \
             --name=netflix-sync \
+            -m one-way-replica \
             -i .gitignore \
             -i .git \
             -i target \
