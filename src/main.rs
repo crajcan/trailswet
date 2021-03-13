@@ -1,3 +1,4 @@
+use actix_files::Files;
 use actix_web::*;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
@@ -21,6 +22,8 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+    let socket_address =
+        env::var("SOCKET_ADDRESS").expect("SOCKET_ADDRESS is not set in .env file");
 
     let db_pool = PgPoolOptions::new()
         .max_connections(5)
@@ -32,8 +35,17 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(db_pool.clone())
             .service(games_controller::show)
+            .service(Files::new(
+                "/favicon.ico",
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("src/static/favicons/favicon.ico"),
+            ))
+            .service(Files::new(
+                "/static",
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),
+            ))
     })
-    .bind("127.0.0.1:3000")?
+    .bind(socket_address)?
     .run()
     .await
 }

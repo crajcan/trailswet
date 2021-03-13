@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+COMPOSE="docker-compose"
+
+if [ $# -gt 0 ]; then
+    if [ "$1" = "up" ]; then
+        shift 1
+        $COMPOSE up "$@" 2>&1 > watch.out &
+
+        CONTAINER_NAME=""
+
+        until [ ${#CONTAINER_NAME} -gt 0 ]
+        do
+          sleep 1
+          CONTAINER_NAME=$(docker ps -q -l)
+        done 
+
+        mutagen sync terminate netflix-sync
+        mutagen sync create \
+            --name=netflix-sync \
+            -m one-way-replica \
+            -i .gitignore \
+            -i .git \
+            -i target \
+            -i watch.out \
+            $(pwd) docker://root@$CONTAINER_NAME/usr/src/netflix
+
+        tail -f watch.out
+    elif [ "$1" = "down" ]; then
+        mutagen sync terminate netflix-sync
+        $COMPOSE down --remove-orphans
+    fi
+fi
