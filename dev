@@ -18,8 +18,10 @@ if [ $# -gt 0 ]; then
         mutagen sync terminate netflix-sync
         mutagen sync create \
             --name=netflix-sync \
-            -i $(pwd)/target \
-            -i $(pwd)/.gitignore \
+            -i .gitignore \
+            -i .git \
+            -i target \
+            -i watch.out \
             $(pwd) docker://root@$CONTAINER_NAME/usr/src/netflix
 
         tail -f watch.out
