@@ -21,6 +21,8 @@ if [ $# -gt 0 ]; then
             -i $(pwd)/target \
             -i $(pwd)/.gitignore \
             $(pwd) docker://root@$CONTAINER_NAME/usr/src/netflix
+
+        tail -f watch.out
     elif [ "$1" = "down" ]; then
         mutagen sync terminate netflix-sync
         $COMPOSE down --remove-orphans
