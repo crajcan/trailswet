@@ -2,9 +2,6 @@ version: '3'
 services:
   netflix:
     image: netflix-dev
-    environment:
-      - DATABASE_URL=postgres://netflix:password@host.docker.internal/netflix
-      - SOCKET_ADDRESS=0.0.0.0:80
     ports:
       - '3000:80'
     command: cargo watch -c -d 0.05 -x run
