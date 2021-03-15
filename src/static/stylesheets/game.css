@@ -1,0 +1,8 @@
+.rwd-line {
+   overflow-wrap: unset;
+   word-break: unset;
+   text-align: center;
+ }
+ .rwd-line span {
+   display:block;
+ }
