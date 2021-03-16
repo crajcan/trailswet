@@ -11,14 +11,20 @@
   <script src="/static/javascript/myapp.js"></script>
 </head>
 <body>
-  <header>
-    <img src="/static/images/netflix_logo.png", width="150", height="75">
-  </header>
-  <h1 class="rwd-line"><span>{{ home_team.name }}</span> <span>vs</span> <span>{{ away_team.name }}</span></h1>
-  <video id="video"
-           width="640"
-           poster="http://shaka-player-demo.appspot.com/assets/poster.jpg"
-           controls autoplay>
-  </video>
+  <div class="main game">
+    <video id="video"
+             width="640"
+             poster="http://shaka-player-demo.appspot.com/assets/poster.jpg"
+             controls autoplay>
+    </video>
+    <h1 class="game title">
+      <span>{{ home_team.name }}</span>
+      <span>vs</span>
+      <span>{{ away_team.name }}</span>
+    </h1>
+    <header>
+      <img src="/static/images/netflix_logo.png", width="150", height="75">
+    </header>
+  </div>
 </body>
 </html>
