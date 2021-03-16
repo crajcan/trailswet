@@ -1,0 +1,20 @@
+.game .title {
+   overflow-wrap: unset;
+   word-break: unset;
+   text-align: left;
+   margin: 0.5em 1em;
+   position: relative;
+ }
+ .game .title span {
+   display:block;
+ }
+
+.game video {
+  width: 100%;
+}
+
+.game header {
+  margin: 2em;
+  position: absolute;
+  bottom: 0;
+}

@@ -1,8 +1,10 @@
 use actix_files::Files;
 use actix_web::*;
+use actix_web::middleware::Logger;
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use std::env;
+use env_logger;
 
 mod utils;
 use utils::netflix_error::NetflixError;
@@ -31,15 +33,13 @@ async fn main() -> std::io::Result<()> {
         .await
         .unwrap();
 
+    env_logger::init();
+
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .data(db_pool.clone())
             .service(games_controller::show)
-            .service(Files::new(
-                "/favicon.ico",
-                std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                    .join("src/static/favicons/favicon.ico"),
-            ))
             .service(Files::new(
                 "/static",
                 std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),
