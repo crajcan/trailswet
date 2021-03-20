@@ -6,28 +6,24 @@
   <link rel="shortcut icon" type="image/x-icon" href="/static/favicons/favicon.ico">
   <link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Ubuntu:400,900">
   <link rel='stylesheet' href="/static/stylesheets/common.css">
-  <link rel='stylesheet' href="/static/stylesheets/game.css">
-  <script src="/static/javascript/shaka-player.compiled.js"></script>
-  <script src="/static/javascript/myapp.js"></script>
+  <link rel='stylesheet' href="/static/stylesheets/games.css">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
-  <div class="main game">
-    <video id="video"
-             width="640"
-             poster="http://shaka-player-demo.appspot.com/assets/poster.jpg"
-             controls autoplay>
-    </video>
-    <h1 class="game title">
-      <span>{{ home_team.name }}</span>
-      <span>vs</span>
-      <span>{{ away_team.name }}</span>
-    </h1>
+  <div class="main games">
     <header>
       <a href="/">
         <img class="logo" src="/static/images/netflix_logo.png">
       </a>
     </header>
+    <section class="title">
+      <h1>
+        Games
+      </h1>
+      <p>
+        Search for a specific game
+      </p>
+    </title>
   </div>
 </body>
 </html>
