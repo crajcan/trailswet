@@ -11,7 +11,7 @@ RUN apt-get install -y lld
 
 RUN cargo install cargo-watch
 
-ENV DATABASE_URL=postgres://netflix:password@host.docker.internal/netflix
+ENV DB_HOST="host.docker.internal"
 ENV SOCKET_ADDRESS=0.0.0.0:80
 
 RUN cargo build

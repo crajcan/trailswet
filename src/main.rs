@@ -23,7 +23,8 @@ use models::*;
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+    let database_url =
+        env::var("DATABASE_URL").expect("Database URL cannot be resolved from .env file");
     let socket_address =
         env::var("SOCKET_ADDRESS").expect("SOCKET_ADDRESS is not set in .env file");
 
