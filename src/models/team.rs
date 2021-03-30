@@ -1,15 +1,15 @@
 use serde::Serialize;
-use sqlx::{Error, PgPool};
+use sqlx::{Error};
+use crate::DB_POOL;
 
 #[derive(Serialize)]
 pub struct Team {
     pub id: i32,
     pub name: String,
-    //pub url: String,
 }
 
 impl Team {
-    pub async fn find(id: i32, pool: &PgPool) -> Result<Self, Error> {
+    pub async fn find(id: i32) -> Result<Self, Error> {
         sqlx::query_as!(
             Team,
             r#"
@@ -19,7 +19,7 @@ impl Team {
                 "#,
             id
         )
-        .fetch_one(&*pool)
+        .fetch_one(&*DB_POOL)
         .await
     }
 }

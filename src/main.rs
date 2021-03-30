@@ -19,27 +19,32 @@ use orchestrators::*;
 mod models;
 use models::*;
 
+#[macro_use]
+extern crate lazy_static;
+lazy_static! {
+    pub static ref DB_POOL: sqlx::PgPool = {
+        let database_url =
+            env::var("DATABASE_URL").expect("Database URL cannot be resolved from .env file");
+
+        PgPoolOptions::new()
+            .max_connections(5)
+            .connect_lazy(&database_url)
+            .unwrap()
+    };
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    let database_url =
-        env::var("DATABASE_URL").expect("Database URL cannot be resolved from .env file");
     let socket_address =
         env::var("SOCKET_ADDRESS").expect("SOCKET_ADDRESS is not set in .env file");
-
-    let db_pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
-        .unwrap();
 
     env_logger::init();
 
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .data(db_pool.clone())
             .service(Files::new(
                 "/static",
                 std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),

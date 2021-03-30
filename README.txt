@@ -1,10 +1,18 @@
-# Run the schema file
+# View Docs
 
-psql -U netflix -d netflix -a -f db/schema.sql
+cargo doc --open
 
-# Run a migrations
+# Run migrations
 
-psql -U netflix -d netflix -a -f db/migrations/<my_file>.sql
+## Install sqlx cli
+
+```
+cargo install sqlx-cli --no-default-features --features postgres
+```
+
+```
+sqlx migrate run
+```
 
 # For Global db connection pool
 
