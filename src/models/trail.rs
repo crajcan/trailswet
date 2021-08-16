@@ -3,18 +3,18 @@ use serde::Serialize;
 use sqlx::Error;
 
 #[derive(Serialize)]
-pub struct Team {
+pub struct Trail {
     pub id: i32,
     pub name: String,
 }
 
-impl Team {
+impl Trail {
     pub async fn find(id: i32) -> Result<Self, Error> {
         sqlx::query_as!(
-            Team,
+            Trail,
             r#"
         SELECT *
-        FROM teams
+        FROM trails
         WHERE id = $1 
                 "#,
             id

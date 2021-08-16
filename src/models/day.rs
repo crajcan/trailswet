@@ -1,9 +1,9 @@
 use crate::DB_POOL;
 use chrono::NaiveDateTime;
 use serde::Serialize;
-
+/*
 #[derive(Serialize)]
-pub struct Game {
+pub struct Day {
     pub id: i32,
     pub home_team_id: i32,
     pub away_team_id: i32,
@@ -26,7 +26,7 @@ impl Game {
         .fetch_one(&*DB_POOL)
         .await
     }
-/*
+
     pub async fn find_by_date_range(
         team_a_id: i32,
         team_b_id: i32,

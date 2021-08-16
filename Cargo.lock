@@ -1378,25 +1378,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "netflix"
-version = "0.1.0"
-dependencies = [
- "actix-files",
- "actix-http",
- "actix-web",
- "askama",
- "chrono",
- "derive_more",
- "dotenv",
- "env_logger",
- "futures-util",
- "lazy_static",
- "serde",
- "serde_json",
- "sqlx",
-]
-
-[[package]]
 name = "nom"
 version = "4.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2403,6 +2384,25 @@ checksum = "ab7bb6f14721aa00656086e9335d363c5c8747bae02ebe32ea2c7dece5689b4c"
 dependencies = [
  "pin-project 0.4.27",
  "tracing",
+]
+
+[[package]]
+name = "trailswet"
+version = "0.1.0"
+dependencies = [
+ "actix-files",
+ "actix-http",
+ "actix-web",
+ "askama",
+ "chrono",
+ "derive_more",
+ "dotenv",
+ "env_logger",
+ "futures-util",
+ "lazy_static",
+ "serde",
+ "serde_json",
+ "sqlx",
 ]
 
 [[package]]

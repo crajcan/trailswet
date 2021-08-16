@@ -9,7 +9,7 @@ use sqlx::postgres::PgPoolOptions;
 use std::env;
 
 mod utils;
-use utils::netflix_error::NetflixError;
+use utils::trailswet_error::TrailsWetError;
 use utils::presenter::Presenter;
 
 mod controllers;
@@ -53,13 +53,13 @@ async fn main() -> std::io::Result<()> {
                 "/static",
                 std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),
             ))
-            .service(www::games_controller::show)
-            .service(www::games_controller::index)
-            .service(www::teams_controller::index)
-            .service(www::miscellaneous_controller::home)
-            .service(
-                web::scope("/service_api/v1").service(service_api::v1::games_controller::index),
-            )
+            .service(www::trails_controller::show)
+            .service(www::trails_controller::index)
+  //          .service(www::teams_controller::index)
+  //          .service(www::miscellaneous_controller::home)
+  //          .service(
+  //              web::scope("/service_api/v1").service(service_api::v1::games_controller::index),
+  //          )
     })
     .bind(socket_address)?
     .run()

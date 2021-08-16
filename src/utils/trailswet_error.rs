@@ -4,7 +4,7 @@ use derive_more::{Display, Error};
 use std::convert::From;
 
 #[derive(Debug, Display, Error)]
-pub enum NetflixError {
+pub enum TrailsWetError {
     #[display(fmt = "{:?}", message)]
     UserError { code: StatusCode, message: String },
     #[display(fmt = "An unexpected error occurred.")]
@@ -14,23 +14,23 @@ pub enum NetflixError {
     },
 }
 
-impl error::ResponseError for NetflixError {
+impl error::ResponseError for TrailsWetError {
     fn status_code(&self) -> StatusCode {
         match &self {
-            NetflixError::UserError { code, .. } => *code,
-            NetflixError::InternalError { code, .. } => *code,
+            TrailsWetError::UserError { code, .. } => *code,
+            TrailsWetError::InternalError { code, .. } => *code,
         }
     }
 }
 
-impl From<sqlx::Error> for NetflixError {
+impl From<sqlx::Error> for TrailsWetError {
     fn from(e: sqlx::Error) -> Self {
         match e {
-            sqlx::Error::RowNotFound => NetflixError::UserError {
+            sqlx::Error::RowNotFound => TrailsWetError::UserError {
                 code: StatusCode::NOT_FOUND,
                 message: "The page you were looking for cannot be found".to_string(),
             },
-            _ => NetflixError::InternalError {
+            _ => TrailsWetError::InternalError {
                 code: StatusCode::INTERNAL_SERVER_ERROR,
                 note: None,
             },
