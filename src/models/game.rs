@@ -1,6 +1,6 @@
+use crate::DB_POOL;
 use chrono::NaiveDateTime;
 use serde::Serialize;
-use crate::DB_POOL;
 
 #[derive(Serialize)]
 pub struct Game {
@@ -26,7 +26,7 @@ impl Game {
         .fetch_one(&*DB_POOL)
         .await
     }
-
+/*
     pub async fn find_by_date_range(
         team_a_id: i32,
         team_b_id: i32,
@@ -46,9 +46,10 @@ impl Game {
             team_a_id,
             team_b_id,
             min_date,
-            max_date 
+            max_date
         )
         .fetch_all(&*DB_POOL)
         .await
     }
+*/
 }

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use actix_files::Files;
 use actix_web::middleware::Logger;
 use actix_web::*;
@@ -15,6 +17,8 @@ use controllers::*;
 
 mod orchestrators;
 use orchestrators::*;
+
+mod services;
 
 mod models;
 use models::*;
@@ -49,10 +53,13 @@ async fn main() -> std::io::Result<()> {
                 "/static",
                 std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/static"),
             ))
-            .service(games_controller::show)
-            .service(games_controller::index)
-            .service(teams_controller::index)
-            .service(miscellaneous_controller::home)
+            .service(www::games_controller::show)
+            .service(www::games_controller::index)
+            .service(www::teams_controller::index)
+            .service(www::miscellaneous_controller::home)
+            .service(
+                web::scope("/service_api/v1").service(service_api::v1::games_controller::index),
+            )
     })
     .bind(socket_address)?
     .run()

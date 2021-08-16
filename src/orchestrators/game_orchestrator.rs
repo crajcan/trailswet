@@ -2,7 +2,7 @@ use crate::game::Game;
 use crate::team::Team;
 use askama::Template;
 use serde::Serialize;
-use sqlx::{Error};
+use sqlx::Error;
 
 #[derive(Serialize, Template)]
 #[template(path = "games/show.html")]

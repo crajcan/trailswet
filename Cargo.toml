@@ -3,7 +3,6 @@ name = "netflix"
 version = "0.1.0"
 authors = ["Carson Rajcan <carajcan@gmail.com>"]
 edition = "2018"
-default-run = "main"
 
 [profile.dev]
 debug = 0
@@ -24,12 +23,3 @@ lazy_static = "1.4.0"
 serde = "1.0"
 serde_json = "1.0"
 sqlx = { version = "0.4.2", features = [ "chrono", "postgres", "runtime-actix-native-tls" ] }
-
-[[bin]]
-name = "main"
-path = "src/main.rs"
-
-[[bin]]
-name = "migrate"
-path = "src/migrate.rs"
-

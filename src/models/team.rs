@@ -1,6 +1,6 @@
-use serde::Serialize;
-use sqlx::{Error};
 use crate::DB_POOL;
+use serde::Serialize;
+use sqlx::Error;
 
 #[derive(Serialize)]
 pub struct Team {
